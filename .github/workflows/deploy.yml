@@ -10,6 +10,9 @@ env:
   MONGODB_DB_NAME: gha-demo-db-name
 jobs:
   test:
+    # Here we can specify the environment we want for this specific job
+    # So when the secrets context obj access the username or password it will only access the secrets from the testing environment & not general secrets repository wide
+    environment: testing
     # If we provide the environment here it will only avaivable in the test job
     # For testing we want a different DB with its own credentials, that differs from our prod db 
     env:
