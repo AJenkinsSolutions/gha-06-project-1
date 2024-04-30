@@ -14,8 +14,9 @@ jobs:
     # For testing we want a different DB with its own credentials, that differs from our prod db 
     env:
       MONGODB_CLUSTER_ADDRESS: cluster0.agb9y3z.mongodb.net
-      MONGODB_USERNAME: ajenkinsuiw
-      MONGODB_PASSWORD: duJZO8SWIg95cqH6
+      # We can now access our repository level secret credentials using the github secrets contexts object
+      MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
+      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
       PORT: 8080
     runs-on: ubuntu-latest
     steps:
@@ -35,7 +36,7 @@ jobs:
         run: npm test
       - name: Output information
       # The env object gives us access to all the env varibales in this job 
-        run: echo "${{env.MONGODB_USERNAME}}"
+        run: echo "${{secrets.MONGODB_USERNAME}}"
   deploy:
     needs: test
     runs-on: ubuntu-latest
@@ -44,5 +45,5 @@ jobs:
       # Mongodb username should not be avaiable because it is specific to the that job
       # but the Mongo db Name will be avaiable because it is at workflow level 
         run: |        
-          echo "MONGODB_USERNAME: ${{env.MONGODB_USERNAME}}"
+          echo "MONGODB_USERNAME: ${{secrets.MONGODB_USERNAME}}"
           echo "MONGODB_DB_NAME: ${{env.MONGODB_DB_NAME}}"
