@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - dev
+  workflow_dispatch:
 env:
   #Workflow level
   #Will be available in all jobs in the workflows ** unless a job overwrites this variable
