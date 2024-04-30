@@ -4,9 +4,19 @@ on:
     branches:
       - main
       - dev
+env:
+  #Workflow level
+  #Will be available in all jobs in the workflows ** unless a job overwrites this variable
+  MONGODB_DB_NAME: gha-demo-db-name
 jobs:
   test:
-    environment: testing
+    # If we provide the environment here it will only avaivable in the test job
+    # For testing we want a different DB with its own credentials, that differs from our prod db 
+    env:
+      MONGODB_CLUSTER_ADDRESS: cluster0.agb9y3z.mongodb.net
+      MONGODB_USERNAME: ajenkinsuiw
+      MONGODB_PASSWORD: duJZO8SWIg95cqH6
+      PORT: 8080
     runs-on: ubuntu-latest
     steps:
       - name: Get Code
@@ -19,15 +29,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run server
-        run: npm start & npx wait-on http://127.0.0.1:XYZ
+      #Using env in run instruction you can itroplate 
+        run: npm start & npx wait-on http://127.0.0.1:$PORT
       - name: Run tests
         run: npm test
       - name: Output information
-        run: echo "..."
+      # The env object gives us access to all the env varibales in this job 
+        run: echo "${{env.MONGODB_USERNAME}}"
   deploy:
     needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Output information
+      # Mongodb username should not be avaiable because it is specific to the that job
+      # but the Mongo db Name will be avaiable because it is at workflow level 
         run: |        
-          echo "..."
+          echo "MONGODB_USERNAME: ${{env.MONGODB_USERNAME}}"
+          echo "MONGODB_DB_NAME: ${{env.MONGODB_DB_NAME}}"
